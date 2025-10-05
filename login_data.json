@@ -65,5 +65,12 @@
             "personal_preferences": [],
             "clinical_observations": []
         }
+    ],
+
+    "admin_staff": [
+        {
+            "username": "a1",
+            "password": "aabc123"
+        }
     ]
 }
