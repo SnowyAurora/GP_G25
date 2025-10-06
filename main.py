@@ -44,34 +44,27 @@ def staff_menu(user, staff_user):
         print("1. Log patient medical observations")
         print("2. Log patient personal preferences")
         print("3. View patient log record")
-        print("4. Assign care staff to patient")
-        print("5. Logout")
+        print("4. Logout")
 
         choice = input("Enter your choice: ").strip()
 
-        if choice == "5":
+        if choice == "4":
             print("Logging out.")
             break
-        elif choice in ["1", "2","4"]:
+        elif choice in ["1", "2"]:
             patient = get_valid_patient(user)
             if not patient:
                 continue
-
             if choice == "1":
                 user.input_patient_clinical_observation(patient.username, staff_user.username)
             elif choice == "2":
                 user.input_patient_personal_preference(patient.username, staff_user.username)
-            elif choice == "4":
-                staff_to_assign = get_valid_med_staff(user)
-                if staff_to_assign:
-                    user.assign_care_staff(patient.username, staff_to_assign.username)
-                    print("Staff assigned successfully.")
+            
         elif choice == "3":
             result = user.get_patient_records_staff()
             print(result)
         else:
             print("Invalid option. Please try again.")
-
 
 def patient_login(user):
     login_username = input("Enter patient username: ")
@@ -111,7 +104,12 @@ def admin_menu(user, admin_user):
         print("\n--- Admin Menu ---")
         print("1. Register new patient")
         print("2. Remove existing patient")
-        print("3. Logout")
+        print("3. Assign care staff to patient")
+        print("4. List all existing medical staff")
+        print("5. List all existing patients")
+        print("6. Register new medical staff")
+        print("7. Remove existing medical taff")
+        print("8. Logout")
 
         choice = input("Enter your choice: ").strip()
         if choice == "1":
@@ -119,6 +117,26 @@ def admin_menu(user, admin_user):
         elif choice == "2":
             user.remove_patient()
         elif choice == "3":
+            patient = get_valid_patient(user)
+
+            staff_to_assign = get_valid_med_staff(user)
+            if staff_to_assign:
+                user.assign_care_staff(patient.username, staff_to_assign.username)
+                print("Staff assigned successfully.")
+        elif choice == "4":
+            result = user.list_all_medical_staff()
+            print(result)
+        elif choice == "5":
+            result = user.list_all_patients()
+            print(result)
+        elif choice == "6":
+            user.register_staff()
+            print("Staff registered successfully")
+        elif choice == "7":
+            user.remove_staff()
+            print("Staff removed successfully")
+
+        elif choice == "8":
             print("Logging out.")
             break
         else:

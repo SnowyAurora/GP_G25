@@ -16,12 +16,7 @@
             "username": "p1",
             "password": "pabc123",
             "assigned_caretaker": [
-                "john doe",
-                "John Doe",
-                "john doe",
-                "2",
-                "jane doe",
-                "2"
+                "John Doe"
             ],
             "personal_preferences": [
                 {
@@ -66,7 +61,6 @@
             "clinical_observations": []
         }
     ],
-
     "admin_staff": [
         {
             "username": "a1",

@@ -2,6 +2,8 @@ import json
 from medStaff import MedStaffUser
 from patient import PatientUser
 from admin import AdminUser
+from datetime import datetime
+
 
 class Login:
     def __init__(self, data_path="login_data.json"):
@@ -90,7 +92,6 @@ class Login:
             print("Error: Preference cannot be empty.")
             return False
 
-        import datetime
         timestamp = datetime.datetime.now().isoformat()
 
         preference_record = {
@@ -106,18 +107,28 @@ class Login:
 
 
     def input_patient_clinical_observation(self, patient_username, recorded_by):
-        observation = input("Please fill in clinical observation: ")
         patient = self.find_patient_by_username(patient_username)
-        if patient:
-            from datetime import datetime
-            patient.clinical_observations.append({
-                "recorded_by": recorded_by,
-                "entry": observation,
-                "timestamp": datetime.utcnow().isoformat() + "Z"
-            })
-            self._save_data()
-            print("Successfully saved clinical observation")
-            return 
+        if not patient:
+            print("Error: Patient not found.")
+            return False
+        observation = input("Please fill in clinical observation: ")
+
+        if not observation:
+            print("Error: Observation cannot be empty.")
+            return False
+
+        timestamp = datetime.datetime.now().isoformat()
+
+        clinical_record = {
+            "recorded_by": recorded_by,
+            "entry": observation,
+            "timestamp": timestamp
+        }
+
+        patient.clincal_observations.append(clinical_record)
+        self._save_data()
+        print("Success: Clinical observation saved.")
+        return True
         
     def assign_care_staff(self, patient_username,staff_username):
         patient = self.find_patient_by_username(patient_username)
@@ -167,10 +178,58 @@ class Login:
     
     def register_staff(self):
         username = input("Please enter new staff account username: ")
-        password = input("Please enter new staff account password")
-        name = input("Please enter new staff name")
+        password = input("Please enter new staff account password: ")
+        name = input("Please enter new staff name: ")
         staff = MedStaffUser(username, password, name)
 
         self.medical_staff.append(staff)
         self._save_data()
         return staff
+    
+    def remove_staff(self):
+        remove_username = input("Please enter username of medical staff to be removed: ")
+        staff = self.find_medstaff_by_username(remove_username)
+        if not staff:
+            print(f"Cant find patient {remove_username}")
+            return False
+        
+        self.medical_staff.remove(staff)
+        self._save_data()
+        print(f"Success: Medical staff {staff.username} account has been removed.")
+        return True
+    
+    def list_all_patients(self):
+        if not self.patients:
+            print("No patients found.")
+            return []
+
+        print("=== Full Patient Records ===")
+        for i, patient in enumerate(self.patients, start=1):
+            print(f"\nPatient {i}:")
+            print(f"Username: {patient.username}")
+            print(f"Password: {patient.password}")
+            
+            # Assigned caretakers
+            print("Assigned Caretakers:")
+            if patient.assigned_caretaker:
+                for caretaker in patient.assigned_caretaker:
+                    print(f"{caretaker}")
+            else:
+                return None
+
+        return [patient.username for patient in self.patients]
+    
+    def list_all_medical_staff(self):
+        if not self.medical_staff:
+            print("No medical found.")
+            return []
+
+        print("=== Full Staff Records ===")
+        for i, mstaff in enumerate(self.medical_staff, start=1):
+            print(f"\nMedical Staff {i}:")
+            print(f"Name: {mstaff.name}")
+            print(f"Username: {mstaff.username}")
+            print(f"Password: {mstaff.password}")            
+        
+        return [mstaff.username for mstaff in self.medical_staff]
+
