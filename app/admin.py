@@ -1,4 +1,4 @@
-from user import User
+from app.user import User
 
 class AdminUser(User):
     def __init__(self, username, password):

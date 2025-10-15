@@ -1,8 +1,11 @@
-from user import User
+from app.user import User
 
 class PatientUser(User):
-    def __init__(self, username, password):
+    def __init__(self, username, password,name, email, phone_number):
         super().__init__(username, password)
+        self.name = name
+        self.email = email
+        self.phone_number = phone_number
         self.assigned_caretaker = []
         self.personal_preferences = []
         self.clinical_observations = []
@@ -11,6 +14,9 @@ class PatientUser(User):
         return {
             "username": self.username,
             "password": self.password,
+            "name": self.name,
+            "email": self.email,
+            "phone_number": self.phone_number,
             "assigned_caretaker": self.assigned_caretaker,
             "personal_preferences": self.personal_preferences,
             "clinical_observations": self.clinical_observations

@@ -1,0 +1,77 @@
+{
+    "medical_staff": [
+        {
+            "username": "1",
+            "password": "abc123",
+            "name": "John Doe",
+            "specialisation": "General",
+            "email": "johndoe123@gmail.com",
+            "phone_number": "0123456789"
+        },
+        {
+            "username": "2",
+            "password": "cbd234",
+            "name": "Jane Doe",
+            "specialisation": "General",
+            "email": "janedoe123@gmail.com",
+            "phone_number": "0123456799"
+        }
+    ],
+    "patients": [
+        {
+            "username": "p1",
+            "password": "pabc123",
+            "name": "Peter Doe",
+            "email": "peterdoe123@gmail.com",
+            "phone_number": "0123456799",
+            "assigned_caretaker": [
+                "John Doe"
+            ],
+            "personal_preferences": [
+                {
+                    "recorded_by": "p1",
+                    "entry": "long sleeping hours",
+                    "timestamp": "2025-10-15T13:13:39.391249"
+                },
+                {
+                    "recorded_by": "1",
+                    "entry": "always sleepy",
+                    "timestamp": "2025-10-15T13:14:16.862003"
+                }
+            ],
+            "clinical_observations": [
+                {
+                    "recorded_by": "1",
+                    "entry": "chemo",
+                    "timestamp": "2025-10-15T13:14:36.004041"
+                },
+                {
+                    "recorded_by": "1",
+                    "entry": "chemo",
+                    "timestamp": "2025-10-15T13:14:36.099955"
+                },
+                {
+                    "recorded_by": "1",
+                    "entry": "chemo1",
+                    "timestamp": "2025-10-15T13:14:41.522353"
+                }
+            ]
+        },
+        {
+            "username": "p2",
+            "password": "pcbd234",
+            "name": "Joe Doe",
+            "email": "joedoe123@gmail.com",
+            "phone_number": "0123456799",
+            "assigned_caretaker": [],
+            "personal_preferences": [],
+            "clinical_observations": []
+        }
+    ],
+    "admin_staff": [
+        {
+            "username": "a1",
+            "password": "aabc123"
+        }
+    ]
+}
