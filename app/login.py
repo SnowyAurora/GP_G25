@@ -7,6 +7,8 @@ from app.admin_utils import logging
 import io
 import csv
 import re
+from datetime import datetime, timedelta
+
 
 class Login:
     def __init__(self, data_path="login_data.json"):
@@ -16,7 +18,6 @@ class Login:
         self.admins = []
         self.config_log = []
         self.log_path = "carelog.log"
-
         self._load_data()
 
     def _load_data(self):
@@ -26,6 +27,8 @@ class Login:
 
                 for s in data.get("medical_staff", []):
                     medStaff = MedStaffUser(s["username"], s["password"],s["name"],s["specialisation"],s["email"],s["phone_number"])
+                    medStaff.failed_attempts = s.get("failed_attempts",0)
+                    medStaff.lock_time = s.get("lock_time", "2025-10-22T14:37:51.921020")
                     self.medical_staff.append(medStaff)
 
                 for p in data.get("patients", []):
@@ -33,10 +36,16 @@ class Login:
                     patient.assigned_caretaker = p.get("assigned_caretaker", [])
                     patient.personal_preferences = p.get("personal_preferences", [])
                     patient.clinical_observations = p.get("clinical_observations", [])
+                    patient.failed_attempts = p.get("failed_attempts",0)
+                    patient.lock_time = p.get("lock_time", "2025-10-22T14:37:51.921020")
+
                     self.patients.append(patient)
 
                 for a in data.get("admin_staff",[]):
                     admin = AdminUser(a["username"],a["password"])
+                    admin.failed_attempts = a.get("failed_attempts",0)
+                    admin.lock_time = a.get("lock_time", "2025-10-22T14:37:51.921020")
+
                     self.admins.append(admin)
 
         except FileNotFoundError:
@@ -78,26 +87,72 @@ class Login:
         with open(self.data_path, 'w') as f:
             json.dump(data_to_save, f, indent=4)
 
+
+    def verify_password(self, stored_password, entered_password):
+        return stored_password.lower() == entered_password.lower()
+
+    def authenticate(self, username, password, user_list, user_type):
+        if not isinstance(username, str) or not isinstance(password, str):
+            return None, "⚠️ Invalid input type."
+
+        for user in user_list:
+            if username.lower() == user.username.lower():
+                # Initialize tracking fields if missing
+                if not hasattr(user, "failed_attempts"):
+                    user.failed_attempts = 0
+                if not hasattr(user, "lock_time"):
+                    user.lock_time = None
+
+                # --- Unlock account after 3 minutes ---
+                if user.lock_time:
+                    try:
+                        locked_at = datetime.fromisoformat(user.lock_time)
+                        if datetime.now() - locked_at >= timedelta(minutes=3):
+                            user.failed_attempts = 0
+                            user.lock_time = None
+                            self._save_data()
+                    except ValueError:
+                        user.lock_time = None  # Reset if stored incorrectly
+
+                # --- Check if account is still locked ---
+                if user.failed_attempts >= 5 and user.lock_time is not None:
+                    locked_at = datetime.fromisoformat(user.lock_time)
+                    remaining_time = (locked_at + timedelta(minutes=3)) - datetime.now()
+                    remaining_seconds = int(remaining_time.total_seconds())
+                    if remaining_seconds > 0:
+                        return None, ("locked", remaining_seconds)
+                    else:
+                        user.failed_attempts = 0
+                        user.lock_time = None
+                        self._save_data()
+
+                # --- Password verification ---
+                if self.verify_password(user.password, password):
+                    user.failed_attempts = 0
+                    user.lock_time = None
+                    self._save_data()
+                    logging.info(f"{user_type.capitalize()} '{username}' logged in successfully.")
+                    return user, "Login successful!"
+                else:
+                    user.failed_attempts += 1
+                    # Lock account after 5 failed attempts
+                    if user.failed_attempts >= 5:
+                        user.lock_time = datetime.now().isoformat()
+                        self._save_data()
+                        return None, f"🔒 {user_type.capitalize()} account locked due to too many failed attempts."
+                    else:
+                        remaining = 5 - user.failed_attempts
+                        self._save_data()
+                        return None, f"Invalid password. {remaining} attempt(s) remaining."
+
     def check_valid_username_password_patient(self, username, password):
-        if not isinstance(username,str) or not isinstance(password,str):
-            return
-        for patient in self.patients:
-            if username.lower() == patient.username.lower() and password.lower() == patient.password.lower():
-                return patient
+        return self.authenticate(username, password, self.patients, "patient")
 
     def check_valid_username_password_medstaff(self, username, password):
-        if not isinstance(username,str) or not isinstance(password,str):
-            return
-        for medstaff in self.medical_staff:
-            if username.lower() == medstaff.username.lower() and password.lower() == medstaff.password.lower():
-                return medstaff
-            
+        return self.authenticate(username, password, self.medical_staff, "medical staff")
+
     def check_valid_username_password_admin(self, username, password):
-        if not isinstance(username,str) or not isinstance(password,str):
-            return
-        for admin in self.admins:
-            if username.lower() == admin.username.lower() and password.lower() == admin.password.lower():
-                return admin
+        return self.authenticate(username, password, self.admins, "admin")
 
     def find_medstaff_by_username(self, staff_username):
         if not isinstance(staff_username,str):
@@ -139,7 +194,10 @@ class Login:
             return
         
         patient = self.find_patient_by_username(patient_username)
-        if not self.find_patient_by_username(recorded_by_username) or self.find_medstaff_by_username(recorded_by_username):
+        medstaff_recorder = self.find_medstaff_by_username(recorded_by_username)
+        patient_recorder = self.find_patient_by_username(recorded_by_username)
+
+        if medstaff_recorder == None and patient_recorder == None:
             return
         
         if not patient:
@@ -167,7 +225,10 @@ class Login:
             return
         
         patient = self.find_patient_by_username(patient_username)
-        if not self.find_patient_by_username(recorded_by_username) or self.find_medstaff_by_username(recorded_by_username):
+        medstaff_recorder = self.find_medstaff_by_username(recorded_by_username)
+        patient_recorder = self.find_patient_by_username(recorded_by_username)
+
+        if medstaff_recorder == None and patient_recorder == None:
             return
         
         if not patient:
@@ -462,7 +523,7 @@ class Login:
             writer.writerow([row.get(h, "") for h in headers])
 
         return buffer.getvalue()
-
+         
     def get_all_patient_usernames(self):
         return [patient.username for patient in self.patients]
     
@@ -472,7 +533,8 @@ class Login:
     def get_all_patient_phone_number(self):
         return [patient.phone_number for patient in self.patients]
 
-
+    def get_all_medstaff_name(self):
+        return [medstaff.name for medstaff in self.medical_staff]
     def get_all_medstaff_usernames(self):
         return [medstaff.username for medstaff in self.medical_staff]
     

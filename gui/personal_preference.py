@@ -12,8 +12,8 @@ def patient_log_management(manager):
         st.subheader("Select Patient")
         patient_list = manager.get_all_patient_usernames()  
         selected_patient = st.selectbox("Choose a patient", patient_list)
-        target_username = selected_patient
-        recorded_by = current_user
+        target_username = str(selected_patient)
+        recorded_by = str(current_user)
     else:
         # If patient, record for themselves
         st.subheader("Log Your Personal Preference")
@@ -42,6 +42,9 @@ def patient_log_management(manager):
             co_submit_btn = st.form_submit_button("Save Clinical Observation")
             
             if co_submit_btn:
+                print(type(target_username))
+                print(type(recorded_by))
+                print(type(clinical_observation_input))
                 clinical_observation  = manager.input_patient_clinical_observation(
                     target_username,
                     recorded_by,

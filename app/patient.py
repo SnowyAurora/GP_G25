@@ -6,6 +6,8 @@ class PatientUser(User):
         self.name = name
         self.email = email
         self.phone_number = phone_number
+        self.failed_attempts = 0
+        self.lock_time = None
         self.assigned_caretaker = []
         self.personal_preferences = []
         self.clinical_observations = []
@@ -19,5 +21,7 @@ class PatientUser(User):
             "phone_number": self.phone_number,
             "assigned_caretaker": self.assigned_caretaker,
             "personal_preferences": self.personal_preferences,
-            "clinical_observations": self.clinical_observations
+            "clinical_observations": self.clinical_observations,
+            "failed_attempts": getattr(self, "failed_attempts", 0),
+            "lock_time": getattr(self, "lock_time", None)
         }

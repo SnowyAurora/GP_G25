@@ -4,6 +4,8 @@
             "username": "1",
             "password": "abc123",
             "name": "John Doe",
+            "failed_attempts": 0,
+            "lock_time": "2025-10-22T14:37:51.921020",
             "specialisation": "General",
             "email": "johndoe123@gmail.com",
             "phone_number": "0123456789"
@@ -12,6 +14,8 @@
             "username": "2",
             "password": "cbd234",
             "name": "Jane Doe",
+            "failed_attempts": 0,
+            "lock_time": "2025-10-22T14:37:51.921020",
             "specialisation": "General",
             "email": "janedoe123@gmail.com",
             "phone_number": "0123456799"
@@ -25,7 +29,7 @@
             "email": "peterdoe123@gmail.com",
             "phone_number": "0123456799",
             "assigned_caretaker": [
-                "John Doe"
+                "Jane Doe"
             ],
             "personal_preferences": [
                 {
@@ -37,6 +41,21 @@
                     "recorded_by": "1",
                     "entry": "always sleepy",
                     "timestamp": "2025-10-15T13:14:16.862003"
+                },
+                {
+                    "recorded_by": "p1",
+                    "entry": "sad",
+                    "timestamp": "2025-10-23T15:55:54.260475"
+                },
+                {
+                    "recorded_by": "1",
+                    "entry": "happy",
+                    "timestamp": "2025-10-23T16:05:24.721427"
+                },
+                {
+                    "recorded_by": "1",
+                    "entry": "a",
+                    "timestamp": "2025-10-23T16:43:08.563363"
                 }
             ],
             "clinical_observations": [
@@ -54,8 +73,15 @@
                     "recorded_by": "1",
                     "entry": "chemo1",
                     "timestamp": "2025-10-15T13:14:41.522353"
+                },
+                {
+                    "recorded_by": "1",
+                    "entry": "sad",
+                    "timestamp": "2025-10-23T16:05:36.171951"
                 }
-            ]
+            ],
+            "failed_attempts": 5,
+            "lock_time": "2025-10-23T21:28:40.887984"
         },
         {
             "username": "p2",
@@ -64,14 +90,30 @@
             "email": "joedoe123@gmail.com",
             "phone_number": "0123456799",
             "assigned_caretaker": [],
-            "personal_preferences": [],
-            "clinical_observations": []
+            "personal_preferences": [
+                {
+                    "recorded_by": "1",
+                    "entry": "happy",
+                    "timestamp": "2025-10-23T16:05:14.685224"
+                }
+            ],
+            "clinical_observations": [
+                {
+                    "recorded_by": "1",
+                    "entry": "sad",
+                    "timestamp": "2025-10-23T16:05:15.989631"
+                }
+            ],
+            "failed_attempts": 0,
+            "lock_time": "2025-10-22T14:37:51.921020"
         }
     ],
     "admin_staff": [
         {
             "username": "a1",
-            "password": "aabc123"
+            "password": "aabc123",
+            "failed_attempts": 5,
+            "lock_time": "2025-10-22T14:37:51.921020"
         }
     ]
 }

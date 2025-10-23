@@ -5,7 +5,7 @@ def show_carestaff_management_page(manager):
 
     st.subheader("Assign care staff to patient")    
     patient_username_list = manager.get_all_patient_usernames()
-    staff_name_list = manager.get_all_medstaff_names()
+    staff_name_list = manager.get_all_medstaff_name()
 
     if not patient_username_list or not staff_name_list:
         st.warning("No patients or staff available for assignment.")
@@ -28,7 +28,7 @@ def show_carestaff_management_page(manager):
     with st.form("unassign_form"):
         unassign_patient_username = st.selectbox("Select patient", patient_username_list)
         unassign_staff_username = st.selectbox("Select staff", staff_name_list)
-        unassign_button = st.form_submit_button("Assign")
+        unassign_button = st.form_submit_button("Unassign")
     
         if unassign_button:
             result_assign = manager.unassign_care_staff(unassign_patient_username, unassign_staff_username)
