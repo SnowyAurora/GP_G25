@@ -45,7 +45,7 @@ class Login:
     def load_log(self):
         try:
             
-            pattern = re.compile(r"^(.*?) - (.*?) - (.*)$")  # timestamp - level - message
+            pattern = re.compile(r"^(.*?) - (.*?) - (.*)$")
 
             with open(self.log_path,'r') as f:
                 for line in f:
@@ -79,100 +79,156 @@ class Login:
             json.dump(data_to_save, f, indent=4)
 
     def check_valid_username_password_patient(self, username, password):
+        if not isinstance(username,str) or not isinstance(password,str):
+            return
         for patient in self.patients:
             if username.lower() == patient.username.lower() and password.lower() == patient.password.lower():
                 return patient
 
     def check_valid_username_password_medstaff(self, username, password):
+        if not isinstance(username,str) or not isinstance(password,str):
+            return
         for medstaff in self.medical_staff:
             if username.lower() == medstaff.username.lower() and password.lower() == medstaff.password.lower():
                 return medstaff
             
     def check_valid_username_password_admin(self, username, password):
+        if not isinstance(username,str) or not isinstance(password,str):
+            return
         for admin in self.admins:
             if username.lower() == admin.username.lower() and password.lower() == admin.password.lower():
                 return admin
 
     def find_medstaff_by_username(self, staff_username):
+        if not isinstance(staff_username,str):
+            return
+        
         for medstaff in self.medical_staff:
             if staff_username.lower() == medstaff.username.lower():
                 return medstaff
             
     def find_medstaff_by_name(self, staff_name):
+        if not isinstance(staff_name,str):
+                    return
+
+        if not re.fullmatch(r"[A-Za-z ]+", staff_name.strip()):
+            return
+
         for medstaff in self.medical_staff:
             if staff_name.lower() == medstaff.name.lower():
                 return medstaff
 
     def find_patient_by_username(self, patient_username):
+        if not isinstance(patient_username,str):
+            return
         for patient in self.patients:
             if patient_username.lower() == patient.username.lower():
                 return patient
             
     def find_patient_by_name(self, patient_name):
+        if not isinstance(patient_name,str):
+            return
+        if not re.fullmatch(r"[A-Za-z ]+", patient_name.strip()):
+            return
         for patient in self.patients:
             if patient_name.lower() == patient.name.lower():
                 return patient
 
-    def input_patient_personal_preference(self, patient_username, recorded_by, preference):
+    def input_patient_personal_preference(self, patient_username, recorded_by_username, preference):
+        if not isinstance(patient_username,str) or not isinstance(recorded_by_username,str) or not isinstance(preference,str):
+            return
+        
         patient = self.find_patient_by_username(patient_username)
+        if not self.find_patient_by_username(recorded_by_username) or self.find_medstaff_by_username(recorded_by_username):
+            return
         
         if not patient:
-            return False
+            return
 
         if not preference:
-            return False
+            return
 
         timestamp = datetime.now().isoformat()
 
         preference_record = {
-            "recorded_by": recorded_by,
+            "recorded_by": recorded_by_username,
             "entry": preference,
             "timestamp": timestamp
         }
 
         patient.personal_preferences.append(preference_record)
-        logging.info(f"Save patient personal preference record recorded by{recorded_by} on {timestamp}")
+        logging.info(f"Save patient personal preference record recorded by{recorded_by_username} on {timestamp}")
         self._save_data()
         return True
 
 
-    def input_patient_clinical_observation(self, patient_username, recorded_by,observation):
+    def input_patient_clinical_observation(self, patient_username, recorded_by_username,observation):
+        if not isinstance(patient_username,str) or not isinstance(recorded_by_username,str) or not isinstance(observation,str):
+            return
+        
         patient = self.find_patient_by_username(patient_username)
+        if not self.find_patient_by_username(recorded_by_username) or self.find_medstaff_by_username(recorded_by_username):
+            return
+        
         if not patient:
-            return False
+            return
 
         if not observation:
-            return False
+            return
 
         timestamp = datetime.now().isoformat()
 
         clinical_record = {
-            "recorded_by": recorded_by,
+            "recorded_by": recorded_by_username,
             "entry": observation,
             "timestamp": timestamp
         }
 
         patient.clinical_observations.append(clinical_record)
-        logging.info(f"Save patient clinical observation record recorded by{recorded_by} on {timestamp}")
+        logging.info(f"Save patient clinical observation record recorded by{recorded_by_username} on {timestamp}")
         self._save_data()
         return True
         
-    def assign_care_staff(self, patient_username,staff_username):
+    def assign_care_staff(self, patient_username,staff_name):
+        if not isinstance(patient_username,str) or not isinstance(staff_name,str):
+            return
+        
+        if not re.fullmatch(r"[A-Za-z ]+", staff_name.strip()):
+            return
+
+
         patient = self.find_patient_by_username(patient_username)
-        if staff_username not in patient.assigned_caretaker:
-            patient.assigned_caretaker.append(staff_username)
-            logging.info(f"Assigned {staff_username} to {patient_username}.")
+        if staff_name not in patient.assigned_caretaker:
+            patient.assigned_caretaker.append(staff_name)
+            logging.info(f"Assigned {staff_name} to {patient_username}.")
             self._save_data()
             return True
-        else:
-            return False
+        
 
     def register_new_patient(self,username, password,name, email, phone_number):
-                
+        if not all(isinstance(x, str) for x in [username, password, name, email, phone_number]):
+            return 
+        if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", email):
+            return 
+        
+        if not phone_number.isdigit():
+            return
+
+        if not re.fullmatch(r"[A-Za-z ]+", name.strip()):
+            return
+        
+        patient_username_list = self.get_all_patient_usernames()
+        patient_email_list = self.get_all_patient_email()
+        patient_phone_number_list= self.get_all_patient_phone_number()
+
+        if username in patient_username_list or username == "":
+            return
+        if email in patient_email_list:
+            return
+        if not phone_number.isdigit() or phone_number in patient_phone_number_list:
+            return
+        
         patient = PatientUser(username, password,name,email, phone_number )
-        patient.name = name
-        patient.email = email
-        patient.phone_number = phone_number
         patient.assigned_caretaker = []
         patient.clinical_observations = []
         patient.personal_preferences = []
@@ -183,9 +239,11 @@ class Login:
         return patient
     
     def remove_patient(self,remove_username):
+        if not isinstance(remove_username,str):
+            return
         patient = self.find_patient_by_username(remove_username)
         if not patient:
-            return False
+            return
         
         self.patients.remove(patient)
         logging.info(f"Successfully removed patient account with {remove_username} username.")
@@ -193,6 +251,8 @@ class Login:
         return True
     
     def get_patient_records_staff(self,patient_username):
+        if not isinstance(patient_username,str):
+            return
         patient = self.find_patient_by_username(patient_username)
         if patient:
             return {
@@ -203,14 +263,31 @@ class Login:
             return {}
         
     def get_patient_records_patient(self,patient_username):
+        if not isinstance(patient_username,str):
+            return
         patient = self.find_patient_by_username(patient_username)
         if patient:
             return patient.personal_preferences
     
     def register_staff(self,username, password,name,specialisation, email, phone_number):
         staff_username_list = self.get_all_medstaff_usernames()
-        staff_email_list = self.get_all_medstaff__email
+        staff_email_list = self.get_all_medstaff_email()
         staff_phone_number_list= self.get_all_medstaff_phone_number()
+
+        if not all(isinstance(x, str) for x in [username, password, name,specialisation, email, phone_number]):
+            return 
+        if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", email):
+            return 
+        
+        if not phone_number.isdigit():
+            return
+
+        if not re.fullmatch(r"[A-Za-z ]+", name.strip()):
+            return
+        
+        
+        if not re.fullmatch(r"[A-Za-z ]+", specialisation.strip()):
+            return
 
         if username in staff_username_list:
             return
@@ -226,9 +303,11 @@ class Login:
         return staff
     
     def remove_staff(self, remove_username):
+        if not isinstance(remove_username,str):
+            return
         staff = self.find_medstaff_by_username(remove_username)
         if not staff:
-            return False
+            return
         
         self.medical_staff.remove(staff)
         logging.info(f"Successfully removed patient account with {remove_username} username.")
@@ -236,11 +315,13 @@ class Login:
         return True
     
     def change_patient_user_password(self,username,password,new_password):
+        if not all(isinstance(x, str) for x in [username, password,new_password]):
+            return
         patient = self.find_patient_by_username(username)
         if not patient:
-            return False 
+            return
         
-        if password == patient.password:
+        if password == patient.password and password != new_password:
             patient.password = new_password
             logging.info(f"Patient account {username} has changed their password")
             self._save_data()
@@ -248,25 +329,36 @@ class Login:
             
         
     def change_medstaff_user_password(self,username,password,new_password):
+        if not all(isinstance(x, str) for x in [username, password,new_password]):
+            return
+
         medstaff = self.find_medstaff_by_username(username)
         if not medstaff:
-            return False 
+            return
         
-        if password == medstaff.password:
+        if password == medstaff.password and password != new_password:
             medstaff.password = new_password
             logging.info(f"Medical staff account {username} has changed their password")
             self._save_data()
             return True
         
-    def unassign_care_staff(self, patient_username,staff_username):
+    def unassign_care_staff(self, patient_username,staff_name):
+        if not isinstance(patient_username,str) or not isinstance(staff_name,str):
+            return
         patient = self.find_patient_by_username(patient_username)
-        if staff_username in patient.assigned_caretaker:
-            patient.assigned_caretaker.remove(staff_username)
-            logging.info(f"{staff_username} has been unassigned from {patient_username}")
+        if not patient:
+            return
+    
+        if not re.fullmatch(r"[A-Za-z ]+", staff_name.strip()):
+                return
+         
+        if staff_name in patient.assigned_caretaker:
+            patient.assigned_caretaker.remove(staff_name)
+            logging.info(f"{staff_name} has been unassigned from {patient_username}")
             self._save_data()
             return True
         else:
-            return False
+            return
     
     def list_all_patients(self):
         if not self.patients:
@@ -308,14 +400,23 @@ class Login:
         return medical_staff_data
     
     def get_patients_clinical_observations(self,patient_username):
+        if not isinstance(patient_username,str):
+            return
         patient = self.find_patient_by_username(patient_username)
         if patient:
             return patient.clinical_observations
 
     
     def export_report(self, kind,username):
+        if not isinstance(username,str):
+            return
+        if not re.fullmatch(r"[A-Za-z ]+", kind.strip()):
+                return
         kind = kind.lower()
+        kind_list = ["patient data","medical staff data", "patient historical logs", "patient clinical observations", "configuration logs"]
 
+        if kind not in kind_list:
+            return
         if kind == "patient data":
             data_to_export = self.list_all_patients()
             headers = ["username","password","name","email","phone_number","assigned_caretakers"]
@@ -365,22 +466,17 @@ class Login:
     def get_all_patient_usernames(self):
         return [patient.username for patient in self.patients]
     
-    def get_all_patient_names(self):
-        return [patient.name for patient in self.patients]
-    
     def get_all_patient_email(self):
         return [patient.email for patient in self.patients]
     
     def get_all_patient_phone_number(self):
         return [patient.phone_number for patient in self.patients]
-    
-    def get_all_medstaff_names(self):
-        return [medstaff.name for medstaff in self.medical_staff]
-    
+
+
     def get_all_medstaff_usernames(self):
         return [medstaff.username for medstaff in self.medical_staff]
     
-    def get_all_medstaff__email(self):
+    def get_all_medstaff_email(self):
         return [medstaff.email for medstaff in self.medical_staff]
     
     def get_all_medstaff_phone_number(self):
