@@ -46,6 +46,9 @@ def patient_log_management(manager):
                 st.error("Could not save preference. Check patient/user or text.")
 
     if user_role == "medical staff":
+        """
+        Draws the GUI for a form and associated fields of input for clinical observation data IF the user is a staff user.
+        """
         st.subheader == "Clinical observation management"
         with st.form("clinical_observation_form"):
             clinical_observation_input = st.text_input("Patient Clinical observation")
@@ -63,6 +66,9 @@ def patient_log_management(manager):
                     st.error("Could not save clinical observation. Please retry.")
 
     st.subheader("Patient Log history")
+    """
+    Handles checking the user's account type, and displays the personal preferences and clinical observsations saved in the database on the GUI.
+    """
     if user_role == "medical staff":
         result = manager.get_patient_records_staff(target_username)
         personal_preferences = result.get("personal_preferences", [])
