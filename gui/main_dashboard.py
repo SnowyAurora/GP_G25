@@ -41,6 +41,9 @@ def check_session_timeout():
     st.session_state.last_activity = current_time
 
 def login_page():
+    """
+    Draws the GUI and Fields of Input for the User on the Login Screen, and Outputs error messages.
+    """
     st.title("🔐 Login Page")
 
     user_type = st.selectbox("User Type", ["Patients", "Medical Staff", "Administrative staff"])
@@ -50,11 +53,21 @@ def login_page():
     if st.button("Login"):
         # Match GUI selection with backend authentication
         if user_type == "Patients":
-            user, message = st.session_state.manager.check_valid_username_password_patient(username, password)
+            try:
+                user, message = st.session_state.manager.check_valid_username_password_patient(username, password)
+            except:
+                user, message = None, "Invalid patient credentials"
+
         elif user_type == "Medical Staff":
-            user, message = st.session_state.manager.check_valid_username_password_medstaff(username, password)
-        else:
-            user, message = st.session_state.manager.check_valid_username_password_admin(username, password)
+            try:
+                user, message = st.session_state.manager.check_valid_username_password_medstaff(username, password)
+            except:
+                user, message = None, "Invalid medical staff credentials"
+        elif user_type == "Administrative staff":
+            try:
+                user, message = st.session_state.manager.check_valid_username_password_admin(username, password)
+            except:
+                user, message = None, "Invalid admin credentials"
 
         # --- Handle account locked with countdown ---
         if isinstance(message, tuple) and message[0] == "locked":
@@ -88,6 +101,9 @@ def login_page():
 
 
 def main_app():
+    """
+    Draws the GUI for the main dashboard of the carelog app, and handles what tabs can be seen by the user depending on their account type.
+    """
 
     check_session_timeout()  # Run timeout check on every rerun
     st.title("Welcome to CareLog System Dashboard")

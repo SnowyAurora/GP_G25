@@ -21,6 +21,16 @@ def patient_log_management(manager):
         recorded_by = current_user
 
     with st.form("personal_preference_form"):
+        """
+            Draws GUI for fields for users to input personal preferences and to save those preferences, then calls the backend function for submitting the form.
+
+            Args : 
+                preference (string) : user inputted preference(s)
+
+            Outputs : 
+                If successfully saved : Output string confirming the preference was saved successfully
+                If preference was not saved : Output string informing user of possible problems with the patient or args.
+        """
         preference = st.text_input("Enter personal preference")
         submit_btn = st.form_submit_button("Save Preference")
 
@@ -36,15 +46,15 @@ def patient_log_management(manager):
                 st.error("Could not save preference. Check patient/user or text.")
 
     if user_role == "medical staff":
+        """
+        Draws the GUI for a form and associated fields of input for clinical observation data IF the user is a staff user.
+        """
         st.subheader == "Clinical observation management"
         with st.form("clinical_observation_form"):
             clinical_observation_input = st.text_input("Patient Clinical observation")
             co_submit_btn = st.form_submit_button("Save Clinical Observation")
             
             if co_submit_btn:
-                print(type(target_username))
-                print(type(recorded_by))
-                print(type(clinical_observation_input))
                 clinical_observation  = manager.input_patient_clinical_observation(
                     target_username,
                     recorded_by,
@@ -56,6 +66,9 @@ def patient_log_management(manager):
                     st.error("Could not save clinical observation. Please retry.")
 
     st.subheader("Patient Log history")
+    """
+    Handles checking the user's account type, and displays the personal preferences and clinical observsations saved in the database on the GUI.
+    """
     if user_role == "medical staff":
         result = manager.get_patient_records_staff(target_username)
         personal_preferences = result.get("personal_preferences", [])

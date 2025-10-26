@@ -1,7 +1,24 @@
 from app.user import User
 
 class PatientUser(User):
-    def __init__(self, username, password,name, email, phone_number):
+    """
+    Represents a patient user instance.
+    """
+
+    def __init__(self, username, password, name, email, phone_number):
+        """
+        Initializes a PatientUser instance.
+
+        Args:
+            username (str): Username used for login authentication.
+            password (str): Password associated with the account.
+            name (str): Full name of the patient.
+            email (str): Email address of the patient.
+            phone_number (str): Contact number of the patient.
+
+        The constructor calls the superclass (`User`) initializer for
+        authentication attributes, then initializes patient-specific details
+        """
         super().__init__(username, password)
         self.name = name
         self.email = email
@@ -13,6 +30,16 @@ class PatientUser(User):
         self.clinical_observations = []
 
     def to_dict(self):
+        """
+        Returns a dictionary representation of the PatientUser instance.
+
+        This method is typically used for data serialization or
+        database/storage operations.
+
+        Returns:
+            dict: A dictionary containing the patient's user details,
+            account status, and related records.
+        """
         return {
             "username": self.username,
             "password": self.password,

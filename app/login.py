@@ -11,7 +11,18 @@ from datetime import datetime, timedelta
 
 
 class Login:
+    
     def __init__(self, data_path="login_data.json"):
+        """
+        Initializes the Login system with data and log file paths.
+
+        Input:
+        data_path (str): Path to the JSON file storing user data.
+
+        Return:
+        None
+        """
+
         self.data_path = data_path
         self.medical_staff = []
         self.patients = []
@@ -21,6 +32,16 @@ class Login:
         self._load_data()
 
     def _load_data(self):
+        """
+        Loads all user data (patients, medical staff, admins) from the JSON file.
+
+        Input:
+        None
+
+        Return:
+        None
+        """
+
         try:
             with open(self.data_path, 'r') as f:
                 data = json.load(f)
@@ -52,6 +73,16 @@ class Login:
             logging.info("Data file not found. Starting with a clean state.")
 
     def load_log(self):
+        """
+        Loads configuration logs from the log file and stores them in memory.
+
+        Input:
+        None
+
+        Return:
+        list: A list of dictionaries containing timestamp, level, and message.
+        """
+
         try:
             
             pattern = re.compile(r"^(.*?) - (.*?) - (.*)$")
@@ -72,6 +103,15 @@ class Login:
             print("Log file not found. Starting with a clean state.")
 
     def export_logs_to_json(self,output_path="exported_logs.json"):
+        """
+        Exports configuration logs into a JSON file.
+
+        Input:
+        output_path (str): File path to save the exported logs.
+
+        Return:
+        None
+        """
         logs = self.load_log()
         with open(output_path, "w") as f:
             json.dump(logs, f, indent=4)
@@ -89,11 +129,33 @@ class Login:
 
 
     def verify_password(self, stored_password, entered_password):
+        """
+        Checks if the entered password matches the stored password (case-insensitive).
+
+        Input:
+        stored_password (str): The saved user password.
+        entered_password (str): The input password provided by the user.
+
+        Return:
+        bool: True if passwords match, False otherwise.
+        """
         return stored_password.lower() == entered_password.lower()
 
     def authenticate(self, username, password, user_list, user_type):
+        """
+        Authenticates a user and manages failed login attempts and lockouts.
+
+        Input:
+        username (str): Username to authenticate.
+        password (str): Password provided by the user.
+        user_list (list): List of user objects to search within.
+        user_type (str): Type of user (patient, staff, admin).
+
+        Return:
+        tuple: (user_object, message) if authenticated, else (None, error_message).
+        """
         if not isinstance(username, str) or not isinstance(password, str):
-            return None, "⚠️ Invalid input type."
+            return None, "Invalid input type."
 
         for user in user_list:
             if username.lower() == user.username.lower():
@@ -146,15 +208,55 @@ class Login:
                         return None, f"Invalid password. {remaining} attempt(s) remaining."
 
     def check_valid_username_password_patient(self, username, password):
+        """
+        Verifies patient login credentials.
+
+        Input:
+        username (str): Patient username.
+        password (str): Patient password.
+
+        Return:
+        tuple: (PatientUser, message) or (None, error_message).
+        """
+
         return self.authenticate(username, password, self.patients, "patient")
 
     def check_valid_username_password_medstaff(self, username, password):
+        """
+        Verifies medical staff login credentials.
+
+        Input:
+        username (str): Staff username.
+        password (str): Staff password.
+
+        Return:
+        tuple: (MedStaffUser, message) or (None, error_message).
+        """
         return self.authenticate(username, password, self.medical_staff, "medical staff")
 
     def check_valid_username_password_admin(self, username, password):
+        """
+        Verifies administrator login credentials.
+
+        Input:
+        username (str): Admin username.
+        password (str): Admin password.
+
+        Return:
+        tuple: (AdminUser, message) or (None, error_message).
+        """
         return self.authenticate(username, password, self.admins, "admin")
 
     def find_medstaff_by_username(self, staff_username):
+        """
+        Finds a medical staff user by their username.
+
+        Input:
+        staff_username (str): Username of the staff.
+
+        Return:
+        MedStaffUser or None.
+        """
         if not isinstance(staff_username,str):
             return
         
@@ -163,8 +265,17 @@ class Login:
                 return medstaff
             
     def find_medstaff_by_name(self, staff_name):
+        """
+        Finds a medical staff user by their full name.
+
+        Input:
+        staff_name (str): Full name of the staff.
+
+        Return:
+        MedStaffUser or None.
+        """
         if not isinstance(staff_name,str):
-                    return
+            return
 
         if not re.fullmatch(r"[A-Za-z ]+", staff_name.strip()):
             return
@@ -174,6 +285,15 @@ class Login:
                 return medstaff
 
     def find_patient_by_username(self, patient_username):
+        """
+        Finds a patient user by their username.
+
+        Input:
+        patient_username (str): Username of the patient.
+
+        Return:
+        PatientUser or None.
+        """
         if not isinstance(patient_username,str):
             return
         for patient in self.patients:
@@ -181,6 +301,15 @@ class Login:
                 return patient
             
     def find_patient_by_name(self, patient_name):
+        """
+        Finds a patient user by their full name.
+
+        Input:
+        patient_name (str): Full name of the patient.
+
+        Return:
+        PatientUser or None.
+        """
         if not isinstance(patient_name,str):
             return
         if not re.fullmatch(r"[A-Za-z ]+", patient_name.strip()):
@@ -190,6 +319,17 @@ class Login:
                 return patient
 
     def input_patient_personal_preference(self, patient_username, recorded_by_username, preference):
+        """
+        Records a new personal preference entry for a patient.
+
+        Input:
+        patient_username (str): Username of the patient.
+        recorded_by_username (str): Username of the recorder.
+        preference (str): Description of the preference.
+
+        Return:
+        bool: True if recorded successfully, None otherwise.
+        """
         if not isinstance(patient_username,str) or not isinstance(recorded_by_username,str) or not isinstance(preference,str):
             return
         
@@ -221,6 +361,17 @@ class Login:
 
 
     def input_patient_clinical_observation(self, patient_username, recorded_by_username,observation):
+        """
+        Records a new clinical observation entry for a patient.
+
+        Input:
+        patient_username (str): Username of the patient.
+        recorded_by_username (str): Username of the recorder.
+        observation (str): Clinical observation details.
+
+        Return:
+        bool: True if recorded successfully, None otherwise.
+        """
         if not isinstance(patient_username,str) or not isinstance(recorded_by_username,str) or not isinstance(observation,str):
             return
         
@@ -251,6 +402,16 @@ class Login:
         return True
         
     def assign_care_staff(self, patient_username,staff_name):
+        """
+        Assigns a medical staff member to a patient.
+
+        Input:
+        patient_username (str): Username of the patient.
+        staff_name (str): Name of the medical staff.
+
+        Return:
+        bool: True if successfully assigned, None otherwise.
+        """
         if not isinstance(patient_username,str) or not isinstance(staff_name,str):
             return
         
@@ -267,6 +428,20 @@ class Login:
         
 
     def register_new_patient(self,username, password,name, email, phone_number):
+        """
+        Registers a new patient into the system.
+
+        Input:
+        username (str): Patient username.
+        password (str): Patient password.
+        name (str): Full name.
+        email (str): Patient email.
+        phone_number (str): Contact number.
+
+        Return:
+        PatientUser if successful, None otherwise.
+        """
+
         if not all(isinstance(x, str) for x in [username, password, name, email, phone_number]):
             return 
         if not re.fullmatch(r"[^@]+@[^@]+\.[^@]+", email):
@@ -300,6 +475,17 @@ class Login:
         return patient
     
     def remove_patient(self,remove_username):
+        """
+
+        Removes a patient account from the system.
+
+        Input:
+        remove_username (str): Username of the patient to remove.
+
+        Return:
+        bool: True if removed successfully, None otherwise.
+        """
+
         if not isinstance(remove_username,str):
             return
         patient = self.find_patient_by_username(remove_username)
@@ -312,6 +498,15 @@ class Login:
         return True
     
     def get_patient_records_staff(self,patient_username):
+        """
+        Retrieves all patient records for staff view.
+
+        Input:
+        patient_username (str): Username of the patient.
+
+        Return:
+        dict: Contains personal preferences and clinical observations.
+        """
         if not isinstance(patient_username,str):
             return
         patient = self.find_patient_by_username(patient_username)
@@ -324,6 +519,16 @@ class Login:
             return {}
         
     def get_patient_records_patient(self,patient_username):
+        """
+        Retrieves patient’s own personal preferences.
+
+        Input:
+        patient_username (str): Username of the patient.
+
+        Return:
+        list: Personal preferences or None.
+        """
+
         if not isinstance(patient_username,str):
             return
         patient = self.find_patient_by_username(patient_username)
@@ -331,6 +536,20 @@ class Login:
             return patient.personal_preferences
     
     def register_staff(self,username, password,name,specialisation, email, phone_number):
+        """
+        Registers a new medical staff account.
+
+        Input:
+        username (str): Staff username.
+        password (str): Staff password.
+        name (str): Full name.
+        specialisation (str): Medical specialization.
+        email (str): Email address.
+        phone_number (str): Contact number.
+
+        Return:
+        MedStaffUser if successful, None otherwise.
+        """
         staff_username_list = self.get_all_medstaff_usernames()
         staff_email_list = self.get_all_medstaff_email()
         staff_phone_number_list= self.get_all_medstaff_phone_number()
@@ -364,6 +583,15 @@ class Login:
         return staff
     
     def remove_staff(self, remove_username):
+        """
+        Removes a medical staff account from the system.
+
+        Input:
+        remove_username (str): Username of the staff to remove.
+
+        Return:
+        bool: True if removed successfully, None otherwise.
+        """
         if not isinstance(remove_username,str):
             return
         staff = self.find_medstaff_by_username(remove_username)
@@ -376,6 +604,18 @@ class Login:
         return True
     
     def change_patient_user_password(self,username,password,new_password):
+        """
+        Updates a patient's password after verifying credentials.
+
+        Input:
+        username (str): Patient username.
+        password (str): Current password.
+        new_password (str): New password.
+
+        Return:
+        bool: True if password changed successfully, None otherwise.
+        """
+
         if not all(isinstance(x, str) for x in [username, password,new_password]):
             return
         patient = self.find_patient_by_username(username)
@@ -390,6 +630,17 @@ class Login:
             
         
     def change_medstaff_user_password(self,username,password,new_password):
+        """
+        Updates a medical staff's password after verifying credentials.
+
+        Input:
+        username (str): Staff username.
+        password (str): Current password.
+        new_password (str): New password.
+
+        Return:
+        bool: True if password changed successfully, None otherwise.
+        """
         if not all(isinstance(x, str) for x in [username, password,new_password]):
             return
 
@@ -404,6 +655,17 @@ class Login:
             return True
         
     def unassign_care_staff(self, patient_username,staff_name):
+        """
+        Unassigns a medical staff member from a patient.
+
+        Input:
+        patient_username (str): Username of the patient.
+        staff_name (str): Name of the medical staff.
+
+        Return:
+        bool: True if unassigned successfully, None otherwise.
+        """
+
         if not isinstance(patient_username,str) or not isinstance(staff_name,str):
             return
         patient = self.find_patient_by_username(patient_username)
@@ -422,6 +684,15 @@ class Login:
             return
     
     def list_all_patients(self):
+        """
+        Retrieves all registered patient data.
+
+        Input:
+        None
+
+        Return:
+        list: List of dictionaries containing patient details.
+        """
         if not self.patients:
             return []
 
@@ -442,6 +713,15 @@ class Login:
         return patient_data
     
     def list_all_medical_staff(self):
+        """
+        Retrieves all registered medical staff data.
+
+        Input:
+            None
+
+        Return:
+            list: List of dictionaries containing medical staff details.
+        """
         if not self.medical_staff:
             return []
 
@@ -461,6 +741,16 @@ class Login:
         return medical_staff_data
     
     def get_patients_clinical_observations(self,patient_username):
+        """
+        Retrieves clinical observations for a specified patient.
+
+        Input:
+            patient_username (str): Username of the patient.
+
+        Return:
+            list: List of clinical observation entries.
+        """
+
         if not isinstance(patient_username,str):
             return
         patient = self.find_patient_by_username(patient_username)
@@ -469,6 +759,17 @@ class Login:
 
     
     def export_report(self, kind,username):
+        """
+        Exports system data (patients, staff, logs) as CSV content.
+
+        Input:
+        kind (str): Type of report to export.
+        username (str): Username relevant to the report.
+
+        Return:
+        str: CSV-formatted string of the exported data.
+        """
+
         if not isinstance(username,str):
             return
         if not re.fullmatch(r"[A-Za-z ]+", kind.strip()):
@@ -525,21 +826,89 @@ class Login:
         return buffer.getvalue()
          
     def get_all_patient_usernames(self):
+        """
+        Retrieves all patient usernames.
+
+        Input:
+        None
+
+        Return:
+        list: List of patient usernames.
+        """
         return [patient.username for patient in self.patients]
     
     def get_all_patient_email(self):
+        """
+        Retrieves all patient email addresses.
+
+        Input:
+        None
+
+        Return:
+        list: List of patient emails.
+        """
+
         return [patient.email for patient in self.patients]
     
     def get_all_patient_phone_number(self):
+        """
+        Retrieves all patient phone numbers.
+
+        Input:
+        None
+
+        Return:
+        list: List of patient phone numbers.
+        """
+
         return [patient.phone_number for patient in self.patients]
 
     def get_all_medstaff_name(self):
+        """
+        Retrieves all medical staff names.
+
+        Input:
+        None
+
+        Return:
+        list: List of medical staff names.
+        """
         return [medstaff.name for medstaff in self.medical_staff]
+    
     def get_all_medstaff_usernames(self):
+        """
+        Retrieves all medical staff usernames.
+
+        Input:
+        None
+
+        Return:
+        list: List of medical staff usernames.
+        """
+
         return [medstaff.username for medstaff in self.medical_staff]
     
     def get_all_medstaff_email(self):
+        """
+        Retrieves all medical staff email addresses.
+
+        Input:
+        None
+
+        Return:
+        list: List of medical staff emails.
+        """
+
         return [medstaff.email for medstaff in self.medical_staff]
     
     def get_all_medstaff_phone_number(self):
+        """
+        Retrieves all medical staff phone numbers.
+
+        Input:
+        None
+
+        Return:
+        list: List of medical staff phone numbers.
+        """
         return [medstaff.phone_number for medstaff in self.medical_staff]
