@@ -4,9 +4,9 @@ CareLog is a lightweight Python-based software solution designed for hospital st
 The  software is designed to be run on Version 3.13.5 of Python, with the most up to date version of streamlit at time of release.
 If neither condition is satisfied, we cannot guaruntee the integrity, functions and stability of the program running on your machine. If any problems or irreversible corruption of your machine occurs, it will be up to you to recover it.
 
-To Use This Program :
+Using The Program :
 
-The intended environment of usage is within VSC, with a virtual environment, with streamlit installed. 
+The program's tested environment of usage is within VSC, with a virtual environment, with streamlit installed. 
 
 To do so : follow the instructions.
     
