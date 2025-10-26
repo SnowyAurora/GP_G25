@@ -21,6 +21,16 @@ def patient_log_management(manager):
         recorded_by = current_user
 
     with st.form("personal_preference_form"):
+        """
+            Draws GUI for fields for users to input personal preferences and to save those preferences, then calls the backend function for submitting the form.
+
+            Args : 
+                preference (string) : user inputted preference(s)
+
+            Outputs : 
+                If successfully saved : Output string confirming the preference was saved successfully
+                If preference was not saved : Output string informing user of possible problems with the patient or args.
+        """
         preference = st.text_input("Enter personal preference")
         submit_btn = st.form_submit_button("Save Preference")
 

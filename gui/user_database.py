@@ -12,7 +12,9 @@ def show_user_database_page(manager):
     """
         Draws the GUI for a list of all patients or staff members from the database.
 
-        Args : None
+        Args : 
+            None
+            
         Outputs : 
             Error(s) : 
                 No staff users in DB - Outputs string telling user no staff accounts could be found

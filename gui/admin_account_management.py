@@ -12,19 +12,19 @@ def show_admin_account_management_page(manager):
     """
     Allows the admin to register a new patient through the GUI.
     args : 
-        Username (String)
-        Password (String) 
-        Name (String)
-        Email (String)
-        Phone Number (String)
+        new_username (String) : User Input of New Patient's Username
+        new_password (String) : User Input of New Patient's Password
+        new_name (String) : User Input of New Patient's Real Name
+        new_email (String) : User Input of New Patient's Email address
+        new_phone (String) : User Input of New Patient's phone number
 
     Outputs :
         Errors : 
             Bad Input : 
                 (Lacks full input of all fields) - Error message telling user to fill in all fields
-                (Inputted name has numeric values) - Error message informing user the name must not contain any numbers
-                (Inputted phone number is not composed entirely of numeric values) - Error message informing user to only input numeric values in the field
-                (Inputted email address does NOT match an email address format) - Error message informing user to input a valid email address
+                (new_name has numeric values) - Error message informing user the name must not contain any numbers
+                (new_phone is not composed entirely of numeric values) - Error message informing user to only input numeric values in the field
+                (new_email address does NOT match an email address format) - Error message informing user to input a valid email address
 
             Good Input BUT overlapping values with a different patients username, email or address :
                 (Overlapping Usernames) - Inform user that the username is used by another in the patient database, and to input a different username.
@@ -92,13 +92,13 @@ def show_admin_account_management_page(manager):
         Allows the admin to remove a patient's account through the account management GUI.
 
     Args : 
-        Username (string) - username of the user to remove
-        CONFIRM (string) - CONFIRM, in all caps
+        remove_username - user input username of the patient user to be removed
+        remove_patient_confirmation - User Input of "CONFIRM"
 
     Outputs :
         Errors : 
             Bad Input : 
-                (CONFIRM arg field input does not match "CONFIRM") - Outputs error message telling user to enter CONFIRM into the arg field.
+                (remove_patient_confirmation does not match "CONFIRM") - Outputs error message telling user to enter CONFIRM into the arg field.
 
             If all inputs are OK but the program cannot delete the user from the database : 
                 Outputs a string informing that the application was unable to remove the patient.
@@ -128,21 +128,21 @@ def show_admin_account_management_page(manager):
     """    
         Allows the admin to initialize and register a new staff account through the account management GUI.
     Args : 
-        Username (String)
-        Password (String) 
-        Name (String)
-        Specialization (String)
-        Email (String)
-        Phone Number (String)
+        new_staff_username (String) : User Input of New Staff Member's Username
+        new_staff_password (String) : User Input of New Staff Member's Password
+        new_staff_name (String) : User Input of New Staff Member's Real Name
+        new_staff_specialization : User Input of New Staff Member's Specialization
+        new_staff_email (String) : User Input of New Staff Member's Email address
+        new_staff_phone (String) : User Input of New Staff Member's phone number
 
     Outputs :
         Errors : 
             Bad Input : 
                 (Lacks full input of all fields) - Error message telling user to fill in all fields
-                (Inputted name has numeric values) - Error message informing user the name must not contain any numbers
-                (Inputted specialization has numeric values within) - Error message informing the user the specialization should not contain numeric values
-                (Inputted phone number is not composed entirely of numeric values) - Error message informing user to only input numeric values in the field
-                (Inputted email address does NOT match an email address format) - Error message informing user to input a valid email address
+                (new_staff_name has numeric values) - Error message informing user the name must not contain any numbers
+                (new_staff_specialization has numeric values within) - Error message informing the user the specialization should not contain numeric values
+                (new_staff_phone is not composed entirely of numeric values) - Error message informing user to only input numeric values in the field
+                (new_staff_email does NOT match an email address format) - Error message informing user to input a valid email address
                 
             Good Input BUT overlapping values with a different staff's username, email or address :
                 (Overlapping Usernames) - Inform user that the username is used by another staff user in the database, and to input a different username.
@@ -214,13 +214,13 @@ def show_admin_account_management_page(manager):
         Allows the admin to remove a staff user's account through the account management GUI.
 
     Args : 
-        Username (string) - username of the staff user to remove
-        CONFIRM (string) - CONFIRM, in all caps
+        remove_staff_username (string) - User Input of username of the staff user to remove
+        remove_staff_confirmation (string) - User Input of CONFIRM
 
     Outputs :
         Errors : 
             Bad Input : 
-                (CONFIRM arg field input does not match "CONFIRM") - Outputs error message telling user to enter CONFIRM into the arg field.
+                (remove_staff_confirmation input does not match "CONFIRM") - Outputs error message telling user to enter CONFIRM into the arg field.
 
             If all inputs are OK but the program cannot delete the user from the database : 
                 Outputs a string informing that the application was unable to remove the user.
@@ -229,7 +229,7 @@ def show_admin_account_management_page(manager):
             Program outputs a string informing the user that the staff user has been successfully removed from the database.
 
     Desired Outcome : 
-        If no errors occur, the program removes the staff user from the database, and deletes all associated information with that user..
+        If no errors occur, the program removes the staff user from the database, and deletes all associated information with that user.
     """
     with st.form("remove_staff_form"):
         remove_staff_username = st.text_input("Account username to remove")
