@@ -1,4 +1,4 @@
-Github link:
+Github link: https://github.com/SnowyAurora/GP_G25
 
 CareLog is a lightweight Python-based software solution designed for hospital staff and patients to log daily notes about patients.
 The  software is designed to be run on Version 3.13.5 of Python, with the most up to date version of streamlit at time of release.
