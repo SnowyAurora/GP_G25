@@ -5,7 +5,10 @@ The  software is designed to be run on Version 3.13.5 of Python, with the most u
 If neither condition is satisfied, we cannot guaruntee the integrity, functions and stability of the program running on your machine. If any problems or irreversible corruption of your machine occurs, it will be up to you to recover it.
 
 To Use This Program :
-The intended environment of usage is within VSC, with a virtual environment, with streamlit installed. To do so : follow the instructions.
+
+The intended environment of usage is within VSC, with a virtual environment, with streamlit installed. 
+
+To do so : follow the instructions.
     
     1 - Download the entire codebase from github in a zip file
     
