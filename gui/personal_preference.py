@@ -42,9 +42,6 @@ def patient_log_management(manager):
             co_submit_btn = st.form_submit_button("Save Clinical Observation")
             
             if co_submit_btn:
-                print(type(target_username))
-                print(type(recorded_by))
-                print(type(clinical_observation_input))
                 clinical_observation  = manager.input_patient_clinical_observation(
                     target_username,
                     recorded_by,

@@ -93,7 +93,7 @@ class Login:
 
     def authenticate(self, username, password, user_list, user_type):
         if not isinstance(username, str) or not isinstance(password, str):
-            return None, "⚠️ Invalid input type."
+            return None, "Invalid input type."
 
         for user in user_list:
             if username.lower() == user.username.lower():
@@ -164,7 +164,7 @@ class Login:
             
     def find_medstaff_by_name(self, staff_name):
         if not isinstance(staff_name,str):
-                    return
+            return
 
         if not re.fullmatch(r"[A-Za-z ]+", staff_name.strip()):
             return
@@ -535,6 +535,7 @@ class Login:
 
     def get_all_medstaff_name(self):
         return [medstaff.name for medstaff in self.medical_staff]
+    
     def get_all_medstaff_usernames(self):
         return [medstaff.username for medstaff in self.medical_staff]
     

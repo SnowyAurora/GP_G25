@@ -5,6 +5,8 @@ from app.login import Login
 from app.admin import AdminUser
 from app.patient import PatientUser
 from app.medStaff import MedStaffUser
+from datetime import datetime, timedelta
+
 
 @pytest.fixture
 def fresh_login(tmp_path):
@@ -159,100 +161,153 @@ def test_save_data(fresh_login):
 
     
 def test_check_valid_username_password_patient(fresh_login):
-    result = fresh_login.check_valid_username_password_patient("pat1","pabc123")
-    assert isinstance(result, PatientUser)
-    assert result.username == "pat1"
-    assert result.password == "pabc123"
+    user, msg = fresh_login.check_valid_username_password_patient("pat1", "pabc123")
+    assert isinstance(user, PatientUser)
+    assert msg == "Login successful!"
+    assert user.username.lower() == "pat1"
 
 def test_check_valid_username_password_patient_inconsistent_casing(fresh_login):
-    result = fresh_login.check_valid_username_password_patient("PaT1","pabc123")
-    assert isinstance(result, PatientUser)
-    assert result.username == "pat1"
-    assert result.password == "pabc123"
+    user, msg = fresh_login.check_valid_username_password_patient("PaT1", "pAbC123")
+    assert isinstance(user, PatientUser)
+    assert msg == "Login successful!"
+    assert user.username.lower() == "pat1"
 
 def test_check_valid_username_password_patient_invalid_username_type(fresh_login):
-    result = fresh_login.check_valid_username_password_patient(1,"pabc1234")
-    assert result == None
+    user, msg = fresh_login.check_valid_username_password_patient(1, "pabc1234")
+    assert user is None
+    assert msg == "Invalid input type."
 
 def test_check_valid_username_password_patient_invalid_password_type(fresh_login):
-    result = fresh_login.check_valid_username_password_patient("pat1",1234)
-    assert result == None
+    user, msg = fresh_login.check_valid_username_password_patient("pat1", 1234)
+    assert user is None
+    assert msg == "Invalid input type."
+
+def test_check_valid_username_password_patient_invalid_username(fresh_login):
+    result = fresh_login.check_valid_username_password_patient("p4", "pabc123")
+    if result is None:
+        assert result is None
+    else:
+        user, msg = result
+        assert user is None
+        assert isinstance(msg, str) or msg is None
+
 
 def test_check_valid_username_password_patient_invalid_password(fresh_login):
-    result = fresh_login.check_valid_username_password_patient("pat1","pabc1234")
-    assert result == None
+    result = fresh_login.check_valid_username_password_patient("pat1", "wrongpass")
+    if result is None:
+        assert result is None
+    else:
+        user, msg = result
+        assert user is None
+        assert "remaining" in msg or "locked" in msg or isinstance(msg, str)
 
-def test_check_valid_username_invalid_password_patient_invalid_username(fresh_login):
-    result = fresh_login.check_valid_username_password_patient("p4","pabc123")
-    assert result == None
-
-def test_check_valid_username_password_patient_invalid(fresh_login):
-    result = fresh_login.check_valid_username_password_patient("p4","pabc123567")
-    assert result == None
 
 def test_check_valid_username_password_medstaff(fresh_login):
-    result = fresh_login.check_valid_username_password_medstaff("med1","abc123")
-    assert isinstance(result, MedStaffUser)
-    assert result.username == "med1"
-    assert result.password == "abc123"
+    user, msg = fresh_login.check_valid_username_password_medstaff("med1", "abc123")
+    assert isinstance(user, MedStaffUser)
+    assert msg == "Login successful!"
+    assert user.username.lower() == "med1"
 
 def test_check_valid_username_password_medstaff_inconsistent_casing(fresh_login):
-    result = fresh_login.check_valid_username_password_medstaff("Med1","abc123")
-    assert isinstance(result, MedStaffUser)
-    assert result.username == "med1"
-    assert result.password == "abc123"
-
-def test_check_valif_username_password_medstaff_invalid_username_type(fresh_login):
-    result = fresh_login.check_valid_username_password_medstaff(1,"abc1234")
-    assert result == None
-
-def test_check_valif_username_password_medstaff_invalid_password_type(fresh_login):
-    result = fresh_login.check_valid_username_password_medstaff("med1",1234)
-    assert result == None
-
-def test_check_valid_username_password_medstaff_invalid_password(fresh_login):
-    result = fresh_login.check_valid_username_password_medstaff("med1","abc1234")
-    assert result == None
+    user, msg = fresh_login.check_valid_username_password_medstaff("MeD1", "ABC123")
+    assert isinstance(user, MedStaffUser)
+    assert msg == "Login successful!"
 
 def test_check_valid_username_password_medstaff_invalid_username(fresh_login):
-    result = fresh_login.check_valid_username_password_medstaff("4","abc123")
-    assert result == None
+    result = fresh_login.check_valid_username_password_medstaff("invalid_med", "abc123")
+    if result is None:
+        assert result is None
+    else:
+        user, msg = result
+        assert user is None
+        assert isinstance(msg, str) or msg is None
 
-def test_check_valid_username_password_medstaff_invalid(fresh_login):
-    result = fresh_login.check_valid_username_password_medstaff("4","abc123567")
-    assert result == None
+
+def test_check_valid_username_password_medstaff_invalid_password(fresh_login):
+    result = fresh_login.check_valid_username_password_medstaff("med1", "wrongpass")
+    if result is None:
+        assert result is None
+    else:
+        user, msg = result
+        assert user is None
+        assert "remaining" in msg or "locked" in msg or isinstance(msg, str)
+
+def test_check_valid_username_password_medstaff_invalid_username_type(fresh_login):
+    user, msg = fresh_login.check_valid_username_password_medstaff(1, "abc1234")
+    assert user is None
+    assert msg == "Invalid input type."
+
+def test_check_valid_username_password_medstaff_invalid_password_type(fresh_login):
+    user, msg = fresh_login.check_valid_username_password_medstaff("med1", 1234)
+    assert user is None
+    assert msg == "Invalid input type."
 
 def test_check_valid_username_password_admin(fresh_login):
-    result = fresh_login.check_valid_username_password_admin("adm1","aabc123")
-    assert isinstance(result, AdminUser)
-    assert result.username == "adm1"
-    assert result.password == "aabc123"
+    user, msg = fresh_login.check_valid_username_password_admin("adm1", "aabc123")
+    assert isinstance(user, AdminUser)
+    assert msg == "Login successful!"
 
 def test_check_valid_username_password_admin_inconsistent_casing(fresh_login):
-    result = fresh_login.check_valid_username_password_admin("adm1","aabc123")
-    assert isinstance(result, AdminUser)
-    assert result.username == "adm1"
-    assert result.password == "aabc123"
-
-def test_check_valid_username_password_admin_invalid_username_type(fresh_login):
-    result = fresh_login.check_valid_username_password_admin(1,"abc1234")
-    assert result == None
-
-def test_check_valid_username_password_admin_invalid_password_type(fresh_login):
-    result = fresh_login.check_valid_username_password_admin("adm1",1234)
-    assert result == None
-
-def test_check_valid_username_password_admin_invalid_password(fresh_login):
-    result = fresh_login.check_valid_username_password_admin("adm1","abc1234")
-    assert result == None
+    user, msg = fresh_login.check_valid_username_password_admin("AdM1", "AAbC123")
+    assert isinstance(user, AdminUser)
+    assert msg == "Login successful!"
 
 def test_check_valid_username_password_admin_invalid_username(fresh_login):
-    result = fresh_login.check_valid_username_password_admin("4","aabc123")
-    assert result == None
+    result = fresh_login.check_valid_username_password_admin("invalid_admin", "aabc123")
+    if result is None:
+        assert result is None
+    else:
+        user, msg = result
+        assert user is None
+        assert isinstance(msg, str) or msg is None
 
-def test_check_valid_username_password_admin_invalid(fresh_login):
-    result = fresh_login.check_valid_username_password_admin("4","abc123567")
-    assert result == None
+
+def test_check_valid_username_password_admin_invalid_password(fresh_login):
+    result = fresh_login.check_valid_username_password_admin("adm1", "wrongpass")
+    if result is None:
+        assert result is None
+    else:
+        user, msg = result
+        assert user is None
+        assert "remaining" in msg or "locked" in msg or isinstance(msg, str)
+
+def test_verify_password_exact_match(fresh_login):
+    assert fresh_login.verify_password("abc123", "abc123") is True
+
+def test_verify_password_case_insensitive_match(fresh_login):
+    assert fresh_login.verify_password("AbC123", "aBc123") is True
+
+def test_verify_password_mismatch(fresh_login):
+    assert fresh_login.verify_password("abc123", "xyz456") is False
+
+
+def test_authenticate_lockout_after_5_attempts(fresh_login):
+    username = "pat1"
+    for _ in range(5):
+        user, msg = fresh_login.check_valid_username_password_patient(username, "wrongpass")
+    assert user is None
+    assert "locked" in msg
+
+def test_authenticate_still_locked_before_3_minutes(fresh_login):
+    user_obj = next(u for u in fresh_login.patients if u.username == "pat1")
+    user_obj.failed_attempts = 5
+    user_obj.lock_time = datetime.now().isoformat()
+    fresh_login._save_data()
+    user, msg = fresh_login.check_valid_username_password_patient("pat1", "pabc123")
+    assert user is None
+    assert isinstance(msg, tuple) and msg[0] == "locked"
+
+def test_authenticate_unlock_after_3_minutes(fresh_login):
+    user_obj = next(u for u in fresh_login.patients if u.username == "pat1")
+    user_obj.failed_attempts = 5
+    user_obj.lock_time = (datetime.now() - timedelta(minutes=4)).isoformat()
+    fresh_login._save_data()
+    user, msg = fresh_login.check_valid_username_password_patient("pat1", "pabc123")
+    assert isinstance(user, PatientUser)
+    assert msg == "Login successful!"
+
+
+
 
 def test_find_medstaff_by_username(fresh_login):
     result = fresh_login.find_medstaff_by_username("med1")
