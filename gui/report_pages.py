@@ -1,6 +1,15 @@
 import streamlit as st
 
 def show_report_pages(manager):
+    """
+    Draws the GUI to allow the user to call the backend function to output all data of a desired type in the system.
+        Data Types Usable : 
+            Patient Users (and associated data)
+            Medical Staff Users (and associated data)
+            Patient Logs 
+            Patient Clinical Observations
+            Program Config Logs
+    """
     st.subheader("Print Reports")
 
     report_types = [

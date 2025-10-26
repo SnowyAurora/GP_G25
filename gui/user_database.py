@@ -9,6 +9,20 @@ def clean_dataframe(df):
     return df
 
 def show_user_database_page(manager):
+    """
+        Draws the GUI for a list of all patients or staff members from the database.
+
+        Args : None
+        Outputs : 
+            Error(s) : 
+                No staff users in DB - Outputs string telling user no staff accounts could be found
+                No patient users in DB - Outputs string saying no patient accounts could be found
+            If no errors occur : 
+                Draws a GUI of all staff users or patient users
+
+        Desired Outcome : 
+            Draws all users in the database
+    """
     st.header("User Database")
 
     st.subheader("Patient Account Database")
