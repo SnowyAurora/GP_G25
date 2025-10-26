@@ -6,10 +6,15 @@ If neither condition is satisfied, we cannot guaruntee the integrity, functions 
 
 To Use This Program :
 The intended environment of usage is within VSC, with a virtual environment, with streamlit installed. To do so : follow the instructions.
+    
     1 - Download the entire codebase from github in a zip file
+    
     2 - Extract this code to a non c:// root file or write protected file
+    
     3 - Open this folder in Visual Studio Code. If you do not have Visual Studio Code, install it.
+    
     4 - After opening the code folder in VSC, create a virtual environment and use 3.13.5 as the interpreter/
+   
     5 - Install Streamlit, using pip install streamlit in your command terminal.
 
     Assuming all steps are followed, you may now type :
