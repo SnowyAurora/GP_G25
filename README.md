@@ -1,6 +1,21 @@
 Github link:
 
-The CareLog is a lightweight Python-based software solution designed for hospital staff and patients to log daily notes about patients.
+CareLog is a lightweight Python-based software solution designed for hospital staff and patients to log daily notes about patients.
+The  software is designed to be run on Version 3.13.5 of Python, with the most up to date version of streamlit at time of release.
+If neither condition is satisfied, we cannot guaruntee the integrity, functions and stability of the program running on your machine. If any problems or irreversible corruption of your machine occurs, it will be up to you to recover it.
+
+To Use This Program :
+The intended environment of usage is within VSC, with a virtual environment, with streamlit installed. To do so : follow the instructions.
+    1 - Download the entire codebase from github in a zip file
+    2 - Extract this code to a non c:// root file or write protected file
+    3 - Open this folder in Visual Studio Code. If you do not have Visual Studio Code, install it.
+    4 - After opening the code folder in VSC, create a virtual environment and use 3.13.5 as the interpreter/
+    5 - Install Streamlit, using pip install streamlit in your command terminal.
+
+    Assuming all steps are followed, you may now type :
+        python -m streamlit run main.py
+    To begin running the program GUI.
+
 
 The main features implemented in the CareLog software for each user type include:
 Patient:
