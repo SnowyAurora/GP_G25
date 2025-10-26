@@ -3,9 +3,43 @@ import pandas as pd
 import re
 
 def show_admin_account_management_page(manager):
+    """
+    Draws the GUI for the admin's account management tab, and handles all input in fields provided in the tab.
+    """
     st.header("Account Actions")
 
     st.subheader("Register new  patient account")
+    """
+    Allows the admin to register a new patient through the GUI.
+    args : 
+        Username (String)
+        Password (String) 
+        Name (String)
+        Email (String)
+        Phone Number (String)
+
+    Outputs :
+        Errors : 
+            Bad Input : 
+                (Lacks full input of all fields) - Error message telling user to fill in all fields
+                (Inputted name has numeric values) - Error message informing user the name must not contain any numbers
+                (Inputted phone number is not composed entirely of numeric values) - Error message informing user to only input numeric values in the field
+                (Inputted email address does NOT match an email address format) - Error message informing user to input a valid email address
+
+            Good Input BUT overlapping values with a different patients username, email or address :
+                (Overlapping Usernames) - Inform user that the username is used by another in the patient database, and to input a different username.
+                (Overlapping Email address) - Informs user that the email address matches another in the patient database and a different one must be used.
+                (Overlapping phone numbers) - Informs user that the phone number matches another in the patient database, and a different one must be used.
+
+            If all inputs are OK but the program cannot save the new user into the database : 
+                Outputs a string informing that the application was unable to register the patient.
+        
+        If all goes well :
+            Program outputs a string informing the user that the patient has been successfully registered in the database.
+
+    Desired Outcome : 
+        If no errors occur, the program generates a new entry in the database with the inputted information.
+    """
     with st.form("register_patient_form"):
         new_username = st.text_input("New Account Username")
         new_password = st.text_input("New Account Password")
@@ -54,6 +88,27 @@ def show_admin_account_management_page(manager):
 
 
     st.subheader("Remove patient account")
+    """
+        Allows the admin to remove a patient's account through the account management GUI.
+
+    Args : 
+        Username (string) - username of the user to remove
+        CONFIRM (string) - CONFIRM, in all caps
+
+    Outputs :
+        Errors : 
+            Bad Input : 
+                (CONFIRM arg field input does not match "CONFIRM") - Outputs error message telling user to enter CONFIRM into the arg field.
+
+            If all inputs are OK but the program cannot delete the user from the database : 
+                Outputs a string informing that the application was unable to remove the patient.
+        
+        If all goes well :
+            Program outputs a string informing the user that the patient has been successfully removed from the database.
+
+    Desired Outcome : 
+        If no errors occur, the program will remove the patient from the database, and all its associated information.
+    """
     with st.form("remove_patient_form"):
         remove_username = st.text_input("Account username to remove")
         remove_patient_confirmation = st.text_input("Please type CONFIRM to confirm remove")
@@ -70,6 +125,39 @@ def show_admin_account_management_page(manager):
                     st.error("Unable to remove account. Please try again!")
 
     st.subheader("Register Staff")
+    """    
+        Allows the admin to initialize and register a new staff account through the account management GUI.
+    Args : 
+        Username (String)
+        Password (String) 
+        Name (String)
+        Specialization (String)
+        Email (String)
+        Phone Number (String)
+
+    Outputs :
+        Errors : 
+            Bad Input : 
+                (Lacks full input of all fields) - Error message telling user to fill in all fields
+                (Inputted name has numeric values) - Error message informing user the name must not contain any numbers
+                (Inputted specialization has numeric values within) - Error message informing the user the specialization should not contain numeric values
+                (Inputted phone number is not composed entirely of numeric values) - Error message informing user to only input numeric values in the field
+                (Inputted email address does NOT match an email address format) - Error message informing user to input a valid email address
+                
+            Good Input BUT overlapping values with a different staff's username, email or address :
+                (Overlapping Usernames) - Inform user that the username is used by another staff user in the database, and to input a different username.
+                (Overlapping Email address) - Informs user that the email address matches another staff user in the database and a different one must be used.
+                (Overlapping phone numbers) - Informs user that the phone number matches another staff user in the database, and a different one must be used.
+                
+            If all inputs are OK but the program cannot save the new staff user into the database : 
+                Outputs a string informing that the application was unable to register the new staff.
+        
+        If all goes well :
+            Program outputs a string informing the user that a staff user has been successfully initialized in the database as an account.
+
+    Desired Outcome : 
+        If no errors occur, the program generates a new entry in the database with the inputted information.
+    """
     with st.form("register_new_staff_form"):
         new_staff_username = st.text_input("New Account Username")
         new_staff_password = st.text_input("New Account Password")
@@ -122,6 +210,27 @@ def show_admin_account_management_page(manager):
 
 
     st.subheader("Remove Staff")
+    """
+        Allows the admin to remove a staff user's account through the account management GUI.
+
+    Args : 
+        Username (string) - username of the staff user to remove
+        CONFIRM (string) - CONFIRM, in all caps
+
+    Outputs :
+        Errors : 
+            Bad Input : 
+                (CONFIRM arg field input does not match "CONFIRM") - Outputs error message telling user to enter CONFIRM into the arg field.
+
+            If all inputs are OK but the program cannot delete the user from the database : 
+                Outputs a string informing that the application was unable to remove the user.
+        
+        If all goes well :
+            Program outputs a string informing the user that the staff user has been successfully removed from the database.
+
+    Desired Outcome : 
+        If no errors occur, the program removes the staff user from the database, and deletes all associated information with that user..
+    """
     with st.form("remove_staff_form"):
         remove_staff_username = st.text_input("Account username to remove")
         remove_staff_confirmation = st.text_input("Please type CONFIRM to confirm remove")
