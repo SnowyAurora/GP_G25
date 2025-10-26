@@ -10,7 +10,7 @@ Using The Program :
 
 The program's tested environment of usage is within VSC, with a virtual environment, with streamlit installed. 
 
-To do so : follow the instructions.
+To run in the intended and tested environment so : follow the instructions.
     
     1 - Download the entire codebase from github in a zip file
     
